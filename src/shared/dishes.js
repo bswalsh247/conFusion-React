@@ -1,3 +1,4 @@
+// this const named DISHES is an array taht contains the details of all the dishes
 export const DISHES =
     [
         {
