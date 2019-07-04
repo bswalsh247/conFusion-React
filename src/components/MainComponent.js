@@ -4,13 +4,20 @@ import Menu from './MenuComponent';
 import DishDetail from './DishdetailComponent';
 import { DISHES } from '../shared/dishes';
 
-
+// A component returns a set of React elements that should appear on the screen
+// Components enable you to split your UI into independent, reusable pieces
+// Components also accept inputs
+// Different kinds of components can be defined in React
+// Each component can store its own local information in its "state"
+// - Private and fully contolled by the component 
+// - Can be passed as props to children
 // we have lifted the state in the MainComponent.js file. It's better to store the state information here.
 // the MainComponent has now become the parent component for the MenuComponent and DishdetailComponent
-class Main extends Component {
+class Main extends Component { // this creates new component 
 
-  constructor(props) {
-    super(props);
+    constructor(props) { // in order to store the state, you need to define the state in the constructor of the class component.
+        super(props); // super class is required whenever you define a class component. It's a way of passing data between
+        // different components.
 
     this.state = { // stores properties related to this component that we can use
         // storing information about the dishes in the menu component state. 
@@ -31,7 +38,8 @@ class Main extends Component {
     // no longer be "null".
 }
 
-  render() {
+    render() {  // any class component in react needs to implent this component 
+    // called render which should return the corresponding view for this component
     return (
       <div>
         <Navbar dark color="primary">

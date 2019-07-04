@@ -1,14 +1,8 @@
-import React, { Component } from 'react'; // this allows me to create a React component 
+import React from 'react'; // this allows me to create a React function 
 import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap';
-
-// A component returns a set of React elements that should appear on the screen
-// Components enable you to split your UI into independent, reusable pieces
-// Components also accept inputs
-// Different kinds of components can be defined in React
-class DishDetail extends Component {  // this creates new component to the app. Name of component is DishDetail
-
+    
     // function that takes the comments array as parameter
-    renderComments(comments) {
+    function RenderComments({comments}) {
         if (comments == null) {
             return (<div></div>)
         }
@@ -41,7 +35,7 @@ class DishDetail extends Component {  // this creates new component to the app. 
     }
 
     // now once the "dish" is selected, we want to render the details of that dish. We use the "renderDish" method for ths.
-    renderDish(dish) { // // this is how we render the the selected dish on the screen. We make use of "renderDish" at the bottom of the code 
+    function RenderDish({dish}) { // // this is how we render the the selected dish on the screen. We make use of "renderDish" at the bottom of the code 
         if (dish != null) { // if rendered dish is not null. 
             return(
                 <div className="col-12 col-md-5 m-1">
@@ -62,23 +56,22 @@ class DishDetail extends Component {  // this creates new component to the app. 
         }
     }
 
-    render() {  // any class component in react needs to implent this component 
-                // called render which should return the corresponding view for this component
-        const dish = this.props.dish
-        if (dish == null) {
-            return (<div></div>)
-        }  
-        const dishItem = this.renderDish(dish)
-        const commentItem = this.renderComments(dish.comments)
-        return (
-            <div className="container">
-                <div className="row">
-                    {dishItem}
-                    {commentItem}
+    const DishDetail = (props) => {
+        if (props.dish != null) 
+            return (
+                <div className="container">
+                    <div className="row">
+                        <RenderDish dish={props.dish}/>
+                        <RenderComments comments={props.dish.comments}/>
+                    </div>
                 </div>
-            </div>
-        )
+            );
+        else {
+            return (
+                <div></div>
+            )
+        }
     }
-}
+    
 
 export default DishDetail;
