@@ -1,14 +1,16 @@
 import React from 'react';
-import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap';
+import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
     function RenderMenuItem({ dish, onClick }) {
         return(
-            <Card onClick={() => onClick(dish.id)}> {/*When I select one of these dishes they will become equal to the selectedDish changing it from null.*/}
-            {/* When I click on the above card using the onClick handling event, that card information is passed into the method called onDishSelect method.*/}
-                <CardImg width="100%" src={dish.image} alt={dish.name}/>
-                <CardImgOverlay>
-                    <CardTitle>{dish.name}</CardTitle>
-                </CardImgOverlay>
+            <Card>
+                <Link to={`/menu/${dish.id}`} >
+                    <CardImg width="100%" src={dish.image} alt={dish.name} />
+                    <CardImgOverlay>
+                        <CardTitle>{dish.name}</CardTitle>
+                    </CardImgOverlay>
+                </Link>
             </Card>
         );
     }
@@ -24,7 +26,7 @@ import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 're
                 // "keys" should be given to elements inside the array to help indentify which items changed,
                 // are added or removed
                 <div key={dish.id} className="col-12 col-md-5 m-1"> {/* col-12 means that for extra-small to small screen sizes I'm laying out one card below the other in the row. col-md-5 means that for medium to extra large screens I'm going to layout cards side by side, with each card occupying five columns in my row. */}
-                    <RenderMenuItem dish={dish} onClick={props.onClick}/>
+                    <RenderMenuItem dish={dish}/>
                 </div>
             );
         });
@@ -34,6 +36,16 @@ import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 're
             //when this "renderDish" function is called that will return the selected dish in the form of a card
             // in DishDetail we are passing the selected dish information as props to the DishdetailComponent.
             <div className="container">
+                <div className="row">
+                    <Breadcrumb>
+                        <BreadcrumbItem><Link to='/home'>Home</Link></BreadcrumbItem>
+                        <BreadcrumbItem active>Menu</BreadcrumbItem>
+                    </Breadcrumb>
+                    <div className="col-12">
+                        <h3>Menu</h3>
+                        <hr />
+                    </div>
+                </div>
                 <div className="row">
                     {menu} 
                 </div>
