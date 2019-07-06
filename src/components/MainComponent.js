@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand } from 'reactstrap';
 import Menu from './MenuComponent';
+import Header from './HeaderComponent';
 import DishDetail from './DishdetailComponent';
+import Footer from './FooterComponent';
 import { DISHES } from '../shared/dishes';
+
 
 // A component returns a set of React elements that should appear on the screen
 // Components enable you to split your UI into independent, reusable pieces
@@ -42,11 +45,7 @@ class Main extends Component { // this creates new component
     // called render which should return the corresponding view for this component
     return (
       <div>
-        <Navbar dark color="primary">
-          <div className="container"> 
-            <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
-          </div>
-        </Navbar>
+        <Header />
         <Menu dishes={this.state.dishes} /* now the dishes that we have defined in the state above 
         is now made available as props to our Menu component.*/
         onClick={(dishId) => this.onDishSelect(dishId)}/> {/*when onClick is invoked it will pass this dishId parameter to onDishSelect and be used at it's parameter. */}
@@ -56,6 +55,7 @@ which contains the dishId of the selected dish. So it will compare the dishId wi
 that out.  The "filter" function will give the subarray of the dishes. So I will have to select the first item from the
 array which is why I have to select the item in index "[0]". By doing this we are selecting the specific dish which is the
 selected dish and then passing that dish info to the dishDetail component*/}
+        <Footer />
       </div>
     );
   }
