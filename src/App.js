@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Main from './components/MainComponent';
 import './App.css';
+import { BrowserRouter } from 'react-router-dom';
 
 // App component is now ready to make use of our MainComponent
 class App extends Component {
@@ -8,9 +9,11 @@ class App extends Component {
   // render MainComponent to index.js file. 
   render() {
     return (
-      <div>
-        <Main />
-      </div>
+      <BrowserRouter>
+        <div>
+          <Main />
+        </div>
+      </BrowserRouter>
     );
   }
 }
