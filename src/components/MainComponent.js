@@ -6,13 +6,18 @@ import DishDetail from './DishdetailComponent';
 import Footer from './FooterComponent';
 import Contact from './ContactComponent';
 import About from './AboutComponent';
-import { DISHES } from '../shared/dishes';
-import { COMMENTS } from '../shared/comments';
-import { LEADERS } from '../shared/leaders';
-import { PROMOTIONS } from '../shared/promotions';
-import { Switch, Route, Redirect } from 'react-router-dom'; 
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom'; 
+import { connect } from 'react-redux';
 
-
+// these will props will now be able to connect to Main Component
+const mapStateToProps = state => {
+      return {
+          dishes: state.dishes,
+          comments: state.comments,
+          promotions: state.promotions,
+          leaders: state.leaders
+      }
+}
 // A component returns a set of React elements that should appear on the screen
 // Components enable you to split your UI into independent, reusable pieces
 // Components also accept inputs
@@ -27,43 +32,24 @@ class Main extends Component { // this creates new component
     constructor(props) { // in order to store the state, you need to define the state in the constructor of the class component.
         super(props); // super class is required whenever you define a class component. It's a way of passing data between
         // different components.
-
-    this.state = { // stores properties related to this component that we can use
-        // storing information about the dishes in the menu component state. 
-    // We use this info to render the menu items.
-      dishes: DISHES, // dishes is the JS object for the DISHES we imported 
-      // now our state information that contains all the dishes are now lifted into the MainComponent.js file and we can 
-      // now make this available to the menu component through props 
-      comments: COMMENTS,
-      promotions: PROMOTIONS,
-      leaders: LEADERS
-    };
   }
-
-//   onDishSelect(dishId) { // State should only be modified using setState()
-//     // onDishSelect receives the dishId as the parameter.
-//     this.setState({ selectedDish: dishId}); // we want the above "selectedDish" to point to our "dishId" parameter so
-//     // to do that we need to change the state which requires us to use the this.setState() function call. 
-//     // This will result in whenever the "onDishSelect" function is called then "this.setState()" will ensure this
-//     // "selectedDish: dishId" will be set equal to the "dishId" that is recieved as the parameter. "selectedDIsh" will 
-//     // no longer be "null".
 
     render() {  // any class component in react needs to implent this component 
     // called render which should return the corresponding view for this component
 
     const HomePage = () => {
         return(
-            <Home dish={this.state.dishes.filter((dish) => dish.featured)[0]}
-             promotion={this.state.promotions.filter((promo) => promo.featured)[0]}
-             leader={this.state.leaders.filter((leader) => leader.featured)[0]}
+            <Home dish={this.props.dishes.filter((dish) => dish.featured)[0]}
+             promotion={this.props.promotions.filter((promo) => promo.featured)[0]}
+             leader={this.props.leaders.filter((leader) => leader.featured)[0]}
             />
         );
     }
 
     const DishWithId = ({match}) => {
         return(
-            <DishDetail dish={this.state.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]}
-                comments={this.state.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))}
+            <DishDetail dish={this.props.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]}
+                comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))}
             />
         );
     }
@@ -73,10 +59,10 @@ class Main extends Component { // this creates new component
         <Header />
             <Switch>
                 <Route path="/home" component={HomePage} />
-                <Route exact path="/menu" component={() => <Menu dishes={this.state.dishes}/>} />
+                <Route exact path="/menu" component={() => <Menu dishes={this.props.dishes}/>} />
                 <Route path="/menu/:dishId" component={DishWithId} />
                 <Route exact path="/contactus" component={Contact} />
-                <Route exact path="/aboutus" component={() => <About leaders={this.state.leaders}/>} />
+                <Route exact path="/aboutus" component={() => <About leaders={this.props.leaders}/>} />
                 <Redirect to="/home" />
             </Switch>
         <Footer />
@@ -85,16 +71,4 @@ class Main extends Component { // this creates new component
   }
 }
 
-export default Main;
-
-
-
-        /* <Menu dishes={this.state.dishes} /* now the dishes that we have defined in the state above 
-        is now made available as props to our Menu component.*/
-        // onClick={(dishId) => this.onDishSelect(dishId)}/> {/*when onClick is invoked it will pass this dishId parameter to onDishSelect and be used at it's parameter. */}
-        // <DishDetail dish={this.state.dishes.filter((dish) => dish.id === this.state.selectedDish)[0]}/> 
-    /*This arrow "=>" function helps to select out all those dishes for which the dishId matches the selected dish, 
-which contains the dishId of the selected dish. So it will compare the dishId with each dish of that and then extract
-that out.  The "filter" function will give the subarray of the dishes. So I will have to select the first item from the
-array which is why I have to select the item in index "[0]". By doing this we are selecting the specific dish which is the
-selected dish and then passing that dish info to the dishDetail component */
+export default withRouter(connect(mapStateToProps)(Main));
