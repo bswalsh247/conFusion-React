@@ -3,13 +3,14 @@ import { Card, CardImg, CardText, CardBody,Modal, ModalHeader, ModalBody,
     CardTitle, Breadcrumb, BreadcrumbItem, Button , Row, Col, Label} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent'
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
     
     // function that takes the comments array as parameter
-    function RenderComments({comments, postComment, dishId}) {
+    function RenderComments({comments, addComment, dishId}) {
         if (comments == null) {
             return (<div></div>)
         }
@@ -37,7 +38,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
                 <ul className="list-unstyled">
                     {cmnts}
                 </ul>
-                <CommentForm dishId={dishId} postComment={postComment} />
+                <CommentForm dishId={dishId} addComment={addComment} />
             </div>
         )
     }
@@ -65,7 +66,25 @@ const minLength = (len) => (val) => val && (val.length >= len);
     }
 
     const DishDetail = (props) => {
-        if (props.dish != null) 
+        if (props.isLoading) {
+            return(
+                <div className="container">
+                    <div className="row">
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        else if (props.errMess) {
+            return(
+                <div className="container">
+                    <div className="row">
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            );
+        }
+        else if (props.dish != null) 
             return (
                 <div className="container">
                     <div className="row">
@@ -80,7 +99,10 @@ const minLength = (len) => (val) => val && (val.length >= len);
                 </div>
                 <div className="row">
                     <RenderDish dish={props.dish}/>
-                    <RenderComments comments={props.comments}/>
+                    <RenderComments comments={props.comments}
+                        addComment={props.addComment}
+                        dishId={props.dish.id}
+                        />
                 </div>
                 </div>
             );
@@ -108,9 +130,8 @@ class CommentForm extends Component {
           });
       }
       handleSubmit(values) {
-        console.log(values)
         this.toggleModal();
-        this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
     }
       render() {
         return (
@@ -178,15 +199,3 @@ class CommentForm extends Component {
       }
     }
 
-// return (
-//     <div className='col-12 col-md-5 m-1'>
-//         <h4> Comments </h4>
-//         <ul className="lsit-unstyled">
-//             {cmnts}
-//         </ul>
-//         <Button outline onClick={this.toggleModal}>
-//             <span className="fa fa-sign-in fa-lg">Login</span>
-//         </Button>
-//     </div>
-// )
-// }

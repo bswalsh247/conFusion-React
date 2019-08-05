@@ -8,8 +8,12 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom'; 
 import { connect } from 'react-redux';
+import { addComment, fetchDishes } from '../redux/ActionCreators';
+import { actions } from 'react-redux-form';
 
 // these will props will now be able to connect to Main Component
+// const varibale is read only and can't be assigned to something else afterwards. 
+// arrow function => is used to to write concise anonymous functions.
 const mapStateToProps = state => {
       return {
           dishes: state.dishes,
@@ -18,6 +22,13 @@ const mapStateToProps = state => {
           leaders: state.leaders
       }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+    addComment: (dishId, rating, author, comment) => dispatch(addComment(dishId, rating, author, comment)),
+    fetchDishes: () => {dispatch(fetchDishes())},
+    resetFeedbackForm: () => { dispatch(actions.reset('feedback'))}
+
+});
 // A component returns a set of React elements that should appear on the screen
 // Components enable you to split your UI into independent, reusable pieces
 // Components also accept inputs
@@ -34,26 +45,40 @@ class Main extends Component { // this creates new component
         // different components.
   }
 
+  componentDidMount() {
+    this.props.fetchDishes();
+  }
+
     render() {  // any class component in react needs to implent this component 
     // called render which should return the corresponding view for this component
+    // arrow functions work really well when using higher order functions like map, filter, reduce, etc. The main thing to know
+    // is they take functions as arguments for processing collections of data. Whenever one function takes another function
+    // as an argument, that's a good time for an arrow function.
+    // the word "this." means that this varibale is only accessible within this class.  
+
 
     const HomePage = () => {
         return(
-            <Home dish={this.props.dishes.filter((dish) => dish.featured)[0]}
-             promotion={this.props.promotions.filter((promo) => promo.featured)[0]}
-             leader={this.props.leaders.filter((leader) => leader.featured)[0]}
+            <Home 
+                dish={this.props.dishes.dishes.filter((dish) => dish.featured)[0]}
+                dishesLoading={this.props.dishes.isLoading}
+                dishesErrMess={this.props.dishes.errMess}
+                promotion={this.props.promotions.filter((promo) => promo.featured)[0]}
+                leader={this.props.leaders.filter((leader) => leader.featured)[0]}
             />
         );
-    }
-
-    const DishWithId = ({match}) => {
+      }
+  
+      const DishWithId = ({match}) => {
         return(
-            <DishDetail dish={this.props.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]}
-                comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))}
-                postComment={this.props.postComment}
+            <DishDetail dish={this.props.dishes.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]}
+              isLoading={this.props.dishes.isLoading}
+              errMess={this.props.dishes.errMess}
+              comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))}
+              addComment={this.props.addComment}
             />
         );
-    }
+    };
 
     return (
       <div>
@@ -62,7 +87,7 @@ class Main extends Component { // this creates new component
                 <Route path="/home" component={HomePage} />
                 <Route exact path="/menu" component={() => <Menu dishes={this.props.dishes}/>} />
                 <Route path="/menu/:dishId" component={DishWithId} />
-                <Route exact path="/contactus" component={Contact} />
+                <Route exact path='/contactus' component={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} />} />
                 <Route exact path="/aboutus" component={() => <About leaders={this.props.leaders}/>} />
                 <Redirect to="/home" />
             </Switch>
@@ -72,4 +97,4 @@ class Main extends Component { // this creates new component
   }
 }
 
-export default withRouter(connect(mapStateToProps)(Main));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
