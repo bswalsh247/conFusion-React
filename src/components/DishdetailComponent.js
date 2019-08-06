@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+
 
 
 const required = (val) => val && val.length;
@@ -12,51 +14,54 @@ const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
     
     // function that takes the comments array as parameter
-    function RenderComments({comments, postComment, dishId}) {
-        if (comments == null) {
-            return (<div></div>)
-        }
-        const cmnts = comments.map(comment => {
+    function RenderComments({ comments, postComment, dishId }) {
+        if (comments != null) {
             return (
-                // access an inner property in a JavaScript object that itself points to an array 
-                // of JavaScript objects. e.g. comment.author.
-                <li key={comment.id}>
-                    <p>{comment.comment}</p>
-                    <p>
-                        {comment.author},
-                        &nbsp;
-                        {new Intl.DateTimeFormat('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: '2-digit'
-                        }).format(new Date(comment.date))}
-                    </p>
-                </li>
-            )
-        })
-        return (
-            <div className='col-12 col-md-5 m-1'>
-                <h4> Comments </h4>
-                <ul className="list-unstyled">
-                    {cmnts}
-                </ul>
-                <CommentForm dishId={dishId} postComment={postComment} />
+                <div className="col-12 col-md-5 m-1">
+                    <h4>Comments</h4>
+                    <ul className="list-unstyled">
+                        <Stagger in>
+                        {comments.map(comment => {
+                            return (
+                        <Fade in>
+                            <li key={comment.id}>
+                            <p>{comment.comment}</p>
+                            <p>-- {comment.author} ,{" "}
+                            {new Intl.DateTimeFormat("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "2-digit"
+                            }).format(new Date(Date.parse(comment.date)))}
+                            </p>
+                            </li>
+                        </Fade>
+                    );
+                })}
+                </Stagger>
+              </ul>
+              <CommentForm dishId={dishId} postComment={postComment} />
             </div>
-        )
-    }
+          );
+        } else return <div />;
+      }
 
     // now once the "dish" is selected, we want to render the details of that dish. We use the "renderDish" method for ths.
     function RenderDish({dish}) { // // this is how we render the the selected dish on the screen. We make use of "renderDish" at the bottom of the code 
         if (dish != null) { // if rendered dish is not null. 
             return(
                 <div className="col-12 col-md-5 m-1">
+                    <FadeTransform in
+                        transformProps={{
+                            exitTransform: 'scale(0.5) translateY(-50%)'
+                        }}>
                     <Card>
-                        <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name}/>
+                        <CardImg top src={baseUrl + dish.image} alt={dish.name} />
                         <CardBody>
-                                <CardTitle>{dish.name}</CardTitle>
-                                <CardText>{dish.description}</CardText>
+                            <CardTitle>{dish.name}</CardTitle>
+                            <CardText>{dish.description}</CardText>
                         </CardBody>
                     </Card>
+                    </FadeTransform>
                 </div>
             );
         }
