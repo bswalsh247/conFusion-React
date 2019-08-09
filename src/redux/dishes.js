@@ -1,5 +1,4 @@
 import * as ActionTypes from './ActionTypes';
-import { truncate } from 'fs';
 
 export const Dishes = (state = { 
         isLoading: true,

@@ -8,9 +8,10 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom'; 
 import { connect } from 'react-redux';
-import { postComment, fetchDishes, fetchComments, fetchPromos } from '../redux/ActionCreators';
+import { postComment, fetchDishes, fetchComments, fetchPromos, fetchLeaders, postFeedback } from '../redux/ActionCreators';
 import { actions } from 'react-redux-form';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
 
 
 // these will props will now be able to connect to Main Component
@@ -26,12 +27,35 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment)),
-    fetchDishes: () => {dispatch(fetchDishes())},
-    resetFeedbackForm: () => { dispatch(actions.reset('feedback'))},
+    fetchDishes: () => {dispatch(fetchDishes());},
+    resetFeedbackForm: () => { dispatch(actions.reset('feedback'));},
     fetchComments: () => dispatch(fetchComments()),
-    fetchPromos: () => dispatch(fetchPromos())
-});
+    fetchPromos: () => dispatch(fetchPromos()),
+    fetchLeaders: () => dispatch(fetchLeaders()),
+    postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment)),
+    postFeedback: (
+        firstname,
+        lastname,
+        telnum,
+        email,
+        agree,
+        contactType,
+        message
+    ) =>
+        dispatch(
+        postFeedback(
+            firstname,
+            lastname,
+            telnum,
+            email,
+            agree,
+            contactType,
+            message
+        )
+        )
+    });
+
+    
 // A component returns a set of React elements that should appear on the screen
 // Components enable you to split your UI into independent, reusable pieces
 // Components also accept inputs
@@ -43,15 +67,16 @@ const mapDispatchToProps = (dispatch) => ({
 // the MainComponent has now become the parent component for the MenuComponent and DishdetailComponent
 class Main extends Component { // this creates new component 
 
-    constructor(props) { // in order to store the state, you need to define the state in the constructor of the class component.
-        super(props); // super class is required whenever you define a class component. It's a way of passing data between
-        // different components.
-  }
+  //   constructor(props) { // in order to store the state, you need to define the state in the constructor of the class component.
+  //       super(props); // super class is required whenever you define a class component. It's a way of passing data between
+  //       // different components.
+  // }
 
   componentDidMount() {
     this.props.fetchDishes();
     this.props.fetchComments();
     this.props.fetchPromos();
+    this.props.fetchLeaders();
   }
 
     render() {  // any class component in react needs to implent this component 
@@ -71,7 +96,9 @@ class Main extends Component { // this creates new component
                 promotion={this.props.promotions.promotions.filter((promo) => promo.featured)[0]}
                 promosLoading={this.props.promotions.isLoading}
                 promosErrMess={this.props.promotions.errMess}
-                leader={this.props.leaders.filter((leader) => leader.featured)[0]}
+                leader={this.props.leaders.leaders.filter(leader => leader.featured)[0]}
+                leaderLoading={this.props.leaders.isLoading}
+                leaderErrMess={this.props.leaders.errMess}
             />
         );
       }
@@ -95,10 +122,14 @@ class Main extends Component { // this creates new component
             <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
               <Switch location={this.props.location}>
                   <Route path='/home' component={HomePage} />
-                  <Route exact path='/aboutus' component={() => <About leaders={this.props.leaders} />} />} />
+                  <Route exact path='/aboutus' component={() => <About leaders={this.props.leaders}
+                        leaderLoading={this.props.leaders.isLoading}
+                        leaderErrMess={this.props.leaders.errMess} />} />} />
                   <Route exact path='/menu' component={() => <Menu dishes={this.props.dishes} />} />
                   <Route path='/menu/:dishId' component={DishWithId} />
-                  <Route exact path='/contactus' component={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} />} />
+                  <Route exact path='/contactus' component={() => <Contact 
+                        resetFeedbackForm={this.props.resetFeedbackForm} 
+                        postFeedback={this.props.postFeedback} />} />
                   <Redirect to="/home" />
               </Switch>
             </CSSTransition>
